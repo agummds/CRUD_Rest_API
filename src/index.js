@@ -19,6 +19,21 @@ app.get("/products", async (req,res)=>{
     res.send(products);
 });
 
+app.post("/products", async (req, res)=>{
+    const newProductData = req.body;
+
+
+    const product = await prisma.product.create({
+        data:{
+            name:newProductData.name,
+            description:newProductData.description,
+            image:newProductData.image,
+            price:newProductData.price,
+        },
+    });
+    res.send("membuat product sukses!!");
+});
+
 
 app.listen(PORT, ()=>{
     console.log("Express API sedang berjalan di port : " + PORT);
