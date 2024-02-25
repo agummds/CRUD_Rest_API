@@ -42,11 +42,33 @@ app.delete("/products/:id", async (req, res) => {
   const ProductId = req.params.id; //string
 
   await prisma.product.delete({
+
     where: {
       id: parseInt(ProductId),
     },
   });
   res.send("product dihapus");
+});
+
+app.put("/products/:id", async (req, res)=>{
+  const ProductId = req.params.id;
+  const ProductData = req.body;
+
+  const product = await prisma.product.update({
+    where:{
+      id:parseInt(ProductId),
+    },
+    data:{
+      description:ProductData.description,
+      image:ProductData.image,
+      name:ProductData.name,
+      price:ProductData.price,
+    },
+  });
+  res.send({
+    data:product,
+    message:"edit product sukses",
+  });
 });
 
 app.listen(PORT, () => {
