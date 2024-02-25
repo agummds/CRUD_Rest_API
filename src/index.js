@@ -1,3 +1,5 @@
+// Tujuan dari index.js ini adalah memegang semua konfigurasi awal dari inisialisasi
+
 const express = require("express");
 const dotenv = require("dotenv");
 const { PrismaClient } = require("@prisma/client");
@@ -22,6 +24,25 @@ app.get("/products", async (req, res) => {
   res.send(products);
 });
 // Akhir Method GET
+
+// Awal GET product berdasarkan Id
+app.get("/products/:id", async (req, res)=>{
+  const productId = req.params.id;
+
+  const product = await prisma.product.findUnique({
+    where: {
+      id: parseInt(productId),
+    },
+  });
+
+  if (!product){
+    return res.status(400).send('Produk tidak ditemukan')
+  }
+
+  res.send(product);
+
+});
+// Akhir GET product berdasarkan Id
 
 // Awal Method POST
 app.post("/products", async (req, res) => {
@@ -80,6 +101,33 @@ app.put("/products/:id", async (req, res)=>{
   });
 });
 // Akhir Metod PUT
+
+// Awal Method PATCH
+/* Method PATCH dan PUT hampir mirip, yang membekana adalah pada method PATCH bisa bisa mengubah satu field saja, 
+misalkan mau mengubaha nama database saja. Tapi kalau dia PUT, itu harsu semau field yang diubah, tidak bisa satu field saja*/
+
+app.patch("/products/:id", async (req,res)=>{
+  const ProductId = req.params.id;    //pada PATCH kita menggunakan req.params dan req.body
+  const ProductData = req.body;
+
+  const product = await prisma.product.update({
+    where:{
+      id:parseInt(ProductId),
+    },
+    data:{
+      description:ProductData.description,
+      image:ProductData.image,
+      name:ProductData.name,
+      price:ProductData.price,
+    },
+  });
+  res.send({
+    data:product,
+    message:"edit product sukses",
+  });
+});  
+
+// Akhir Method PATCH
 
 app.listen(PORT, () => {
   console.log("Express API sedang berjalan di port : " + PORT);
